@@ -11,7 +11,12 @@ export const calculateMaxExp = (habits: Habit[]) => habits.reduce((sum, habit) =
 
 export const fetchHabits = async (): Promise<Habit[]> => {
   try {
-    const response = await fetch('/api/habits') // Sesuaikan dengan endpoint Anda
+    const response = await fetch('/api/habits', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		}) // Sesuaikan dengan endpoint Anda
     if (!response.ok) {
       throw new Error('Network response was not ok')
     }

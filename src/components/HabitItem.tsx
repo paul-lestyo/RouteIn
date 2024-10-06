@@ -16,7 +16,7 @@ const HabitItem = ({ habit, toggleHabit }: HabitItemProps) => {
         }`}
         aria-label={`Mark ${habit.name} as ${habit.completed ? 'incomplete' : 'complete'}`}
       >
-        {habit.completed && <Check className="w-4 h-4" />}
+        {Boolean(habit.completed) && <Check className="w-4 h-4" />}
       </button>
       <span className={`text-lg ${habit.completed ? 'line-through text-gray-500' : 'text-gray-700'}`}>
         {habit.name}

@@ -3,6 +3,7 @@ import HabitList from './HabitList'
 import ExpBar from './ExpBar'
 import { fetchHabits, calculateTotalExp, calculateMaxExp, updateHabit, type Habit } from '../utils/habitUtils';
 import BottomNavigation from './BottomNavigation'
+import MainWrapper from './MainWrapper';
 
 
 const HabitTracker : React.FC = () => {
@@ -42,7 +43,7 @@ const HabitTracker : React.FC = () => {
   };
 	
   return (
-		<div className="min-h-screen bg-gray-100 pb-16">
+		<MainWrapper activeTab={activeTab}>
       <div className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden">
           <div className="p-8">
@@ -52,8 +53,7 @@ const HabitTracker : React.FC = () => {
           </div>
         </div>
       </div>
-      <BottomNavigation activeTab={activeTab} />
-    </div>
+		</MainWrapper>
   )
 }
 

@@ -9,7 +9,7 @@ interface BottomItemNavigationProps {
 
 const BottomItemNavigation: React.FC<BottomItemNavigationProps> = ({ activeTab, menuItem, Icon }) => {
   return (
-    <a href={menuItem}
+    <a href={menuItem.toLowerCase() == "tracker" ? "/" :  menuItem.toLowerCase()}
       className={`flex flex-col items-center ${menuItem.toLowerCase() === activeTab.toLowerCase()  ? 'text-blue-500' : 'text-gray-500'}`}
       aria-label={menuItem}
     >
