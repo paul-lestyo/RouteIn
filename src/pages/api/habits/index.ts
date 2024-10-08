@@ -1,9 +1,21 @@
 import type { APIRoute } from 'astro'
 import db from '../../../lib/tursoDb'
+import { formatDate, isValidDateFormat } from '../../../utils/dateUtils';
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ url }) => {
+
   try {
-    const result = await db.execute('SELECT * FROM habits')
+		const dateHabit = url.searchParams.get('date')
+		console.log(dateHabit);
+		
+		const dateToUse = dateHabit && isValidDateFormat(dateHabit) ? new Date(dateHabit) : new Date();
+		const formattedDate = formatDate(dateToUse);
+		console.log(formattedDate);
+		
+    const result = await db.execute({
+			sql: 'SELECT * FROM habits INNER JOIN daily_habits ON habits.id == daily_habits.habit_id WHERE daily_habits.date = ?',
+			args: [formattedDate],
+		})
     return new Response(JSON.stringify(result.rows), { status: 200 })
   } catch (error) {
     return new Response(JSON.stringify({ error: (error as Error).message }), { status: 500 })

@@ -34,8 +34,7 @@ export default function RecapPage() {
     <MainWrapper activeTab={activeTab}>
       <div className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-md mx-auto overflow-hidden">
-				<h2 className="p-4 max-w-md mx-auto text-2xl font-bold text-gray-900 mb-4 bg-white rounded-xl shadow-md overflow-hidden">Weekly Recap</h2>
-					{/* <h2 className="text-2xl font-bold text-gray-900 mb-4">Weekly Recap</h2> */}
+				<h2 className="p-4 max-w-md mx-auto text-2xl font-bold drop-shadow-2xl borderb">Weekly Recap</h2>
 					<div className="bg-white rounded-xl shadow-md p-4 h-64">
 						<ResponsiveContainer width="100%" height="100%">
 							<BarChart data={weeklyData}>

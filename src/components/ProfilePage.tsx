@@ -34,7 +34,7 @@ export default function ProfilePage() {
   return (
     <MainWrapper activeTab={activeTab}>
       <div className="p-4 sm:p-6 lg:p-8">
-        <h2 className="p-4 max-w-md mx-auto text-2xl font-bold text-gray-900 mb-4 bg-white rounded-xl shadow-md overflow-hidden">User Profile</h2>
+        <h2 className="p-4 max-w-md mx-auto text-2xl font-bold text-gray-900">User Profile</h2>
         <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden">
 					<div className="bg-white rounded-xl shadow-md p-6">
 						<div className="flex items-center mb-4">
