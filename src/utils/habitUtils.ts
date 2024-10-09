@@ -20,6 +20,7 @@ export const fetchHabits = async (): Promise<Habit[]> => {
     if (!response.ok) {
       throw new Error('Network response was not ok')
     }
+		
     const habits = await response.json()
     return habits
   } catch (error) {
@@ -36,7 +37,7 @@ export const fetchHabits = async (): Promise<Habit[]> => {
 
 export const updateHabit = async (id: string, completed: boolean): Promise<void> => {
   try {
-    await fetch(`/api/habits/${id}`, {
+    await fetch(`/api/daily_habits/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

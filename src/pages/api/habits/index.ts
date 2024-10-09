@@ -1,26 +1,34 @@
 import type { APIRoute } from 'astro'
 import db from '../../../lib/tursoDb'
-import { formatDate, isValidDateFormat } from '../../../utils/dateUtils';
+import { formatDate, isValidDateFormat, parseDate } from '../../../utils/dateUtils'
+import type { Value } from '@libsql/client'
 
 export const GET: APIRoute = async ({ url }) => {
-
-  try {
-		const dateHabit = url.searchParams.get('date')
-		console.log(dateHabit);
-		
-		const dateToUse = dateHabit && isValidDateFormat(dateHabit) ? new Date(dateHabit) : new Date();
+	try {
+		const dateHabit = url.searchParams.get('date');
+		const dateToUse = dateHabit && isValidDateFormat(dateHabit) ? parseDate(dateHabit) : new Date();
 		const formattedDate = formatDate(dateToUse);
-		console.log(formattedDate);
-		
-    const result = await db.execute({
-			sql: 'SELECT * FROM habits INNER JOIN daily_habits ON habits.id == daily_habits.habit_id WHERE daily_habits.date = ?',
+		let result = await db.execute({
+			sql: `SELECT * FROM daily_habits INNER JOIN habits ON daily_habits.habit_id = habits.id WHERE daily_habits.date = ?`,
 			args: [formattedDate],
-		})
-    return new Response(JSON.stringify(result.rows), { status: 200 })
-  } catch (error) {
-    return new Response(JSON.stringify({ error: (error as Error).message }), { status: 500 })
-  }
-}
+		});
+
+		if(result.rows.length == 0) {
+			const habits = await db.execute(`SELECT * FROM habits`);
+			const habitIds = habits.rows.map(row => row.id);
+			await createBatchHabitToday(habitIds, formattedDate);
+
+			result = await db.execute({
+				sql: `SELECT * FROM daily_habits INNER JOIN habits ON daily_habits.habit_id = habits.id WHERE daily_habits.date = ?`,
+				args: [formattedDate],
+			});
+		}
+
+		return new Response(JSON.stringify(result.rows), { status: 200 });
+	} catch (error) {
+		return new Response(JSON.stringify({ error: (error as Error).message }), { status: 500 });
+	}
+};
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -35,6 +43,17 @@ export const POST: APIRoute = async ({ request }) => {
   }
 }
 
+export const createBatchHabitToday = async (idRows: Value[], dateString: string) => {
+	try {
+			const insertValues = idRows.map(id => `(${id}, '${dateString}', 0)`).join(', ');
+			const result = await db.execute(`INSERT INTO daily_habits (habit_id, date, completed) VALUES ${insertValues}`);
+			return result.rowsAffected
+
+	} catch (error) {
+			console.error('Error creating batch habits:', error);
+			throw new Error((error as Error).message);
+	}
+}
 // try {
 //   const body = await request.json();
 //   const { action, data } = body;

@@ -7,7 +7,7 @@ export const PUT: APIRoute = async ({ request, params }) => {
 	
 	try {
 		const completedBool = +data.completed
-		let query = "UPDATE habits SET"
+		let query = "UPDATE habit SET"
 		let args = []
 
 		if(data.name) {
