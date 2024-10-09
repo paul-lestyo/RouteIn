@@ -1,4 +1,4 @@
-import type { Habit } from '../utils/habitUtils-hardcoded';
+import type { Habit } from '../utils/habitUtils';
 import HabitItem from './HabitItem';
 
 interface HabitListProps {
