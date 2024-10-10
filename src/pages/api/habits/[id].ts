@@ -26,7 +26,7 @@ export const PUT: APIRoute = async ({ request, params }) => {
 		}
 
 		args.push(id)
-		const result = await db.execute({
+		await db.execute({
 			sql: `${query} WHERE id = ?`,
 			args: args
 		})

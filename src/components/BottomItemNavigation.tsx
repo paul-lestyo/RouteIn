@@ -1,5 +1,4 @@
 import React from 'react';
-import { ListTodo } from 'lucide-react';
 
 interface BottomItemNavigationProps {
   activeTab: string;

@@ -4,11 +4,15 @@ import react from '@astrojs/react'
 
 import tailwind from '@astrojs/tailwind'
 
+import netlify from '@astrojs/netlify'
+
 // https://astro.build/config
 export default defineConfig({
-	devToolbar: {
-    enabled: false
+  devToolbar: {
+    enabled: false,
   },
-	output: 'server',
+
+  output: 'server',
   integrations: [react(), tailwind()],
+  adapter: netlify(),
 })

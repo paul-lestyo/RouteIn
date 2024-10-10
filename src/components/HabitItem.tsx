@@ -1,5 +1,5 @@
 import { Check } from 'lucide-react';
-import type { Habit } from '../utils/habitUtils-hardcoded';
+import type { Habit } from '../utils/habitUtils';
 
 interface HabitItemProps {
   habit: Habit;
