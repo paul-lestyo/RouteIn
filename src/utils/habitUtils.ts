@@ -9,9 +9,10 @@ export const calculateTotalExp = (habits: Habit[]) => habits.reduce((sum, habit)
 
 export const calculateMaxExp = (habits: Habit[]) => habits.reduce((sum, habit) => sum + habit.expValue, 0)
 
-export const fetchHabits = async (): Promise<Habit[]> => {
+export const fetchHabits = async (date?: string): Promise<Habit[]> => {
   try {
-    const response = await fetch('/api/habits', {
+		const parameter = date ? `date=${date}` : "";
+    const response = await fetch(`/api/habits?${parameter}`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',

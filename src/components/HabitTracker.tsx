@@ -47,9 +47,12 @@ const HabitTracker: React.FC = () => {
     const newDate = new Date(currentDate)
     newDate.setDate(newDate.getDate() + days)
     setCurrentDate(newDate)
+		const dateString = newDate.toISOString().split('T')[0]
+		const dateArray = dateString.split('-')
+		const formattedDate = `${dateArray[2]}-${dateArray[1]}-${dateArray[0]}`
 
-		await fetchDataForDate("")
-  }
+		await fetchDataForDate(formattedDate)
+	}
 
 	const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
@@ -60,17 +63,11 @@ const HabitTracker: React.FC = () => {
     setError(null)
     try {
 			setHabits([])
-      const response = await fetch(`https://api.example.com/habits?date=${formattedDate}`)
-      if (!response.ok) {
-        throw new Error('Failed to fetch data')
-      }
-      const data = await response.json()
-      // Process the data here. For example, update the habitLog state
-      // This is a placeholder and should be adjusted based on your API response structure
-      setHabits(prevLog => ({
-        ...prevLog,
-        [formattedDate]: data.habits
-      }))
+			console.log(formattedDate);
+			
+      const habitsFromServer = await fetchHabits(formattedDate)
+			setHabits(habitsFromServer)
+			updateExp(habitsFromServer)
     } catch (err) {
       setError('Failed to load data. Please try again.')
       console.error('Error fetching data:', err)
