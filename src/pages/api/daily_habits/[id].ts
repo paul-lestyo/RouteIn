@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro'
 import db from '../../../lib/tursoDb'
+import { invalidateHabitsCache } from '../habits'
 
 export const PUT: APIRoute = async ({ request, params }) => {
   const { id } = params
@@ -16,6 +17,8 @@ export const PUT: APIRoute = async ({ request, params }) => {
       sql: `UPDATE daily_habits SET completed = ? WHERE id = ?`,
       args: [completedBool, id],
     })
+
+		invalidateHabitsCache()
 
     return new Response(JSON.stringify({ success: true, id: `${id}` }), { status: 200 })
   } catch (error) {

@@ -2,29 +2,43 @@ import type { APIRoute } from 'astro'
 import db from '../../../lib/tursoDb'
 import { formatDate, isValidDateFormat, parseDate } from '../../../utils/dateUtils'
 import type { Value } from '@libsql/client'
+import { LRUCache } from 'lru-cache'
+
+const cache = new LRUCache({
+  max: 100, // Maximum number of items in the cache
+  ttl: 1000 * 60 * 60 // Cache expiration time in milliseconds (1 hour)
+})
 
 export const GET: APIRoute = async ({ url }) => {
 	try {
 		const dateHabit = url.searchParams.get('date');
 		const dateToUse = dateHabit && isValidDateFormat(dateHabit) ? parseDate(dateHabit) : new Date();
 		const formattedDate = formatDate(dateToUse);
-		let result = await db.execute({
+		const cacheKey = `habits_${formattedDate}`
+
+    let result = cache.get(cacheKey)
+    if (result) {
+      return new Response(JSON.stringify(result), { status: 200 })
+    }
+
+		let resultRow = await db.execute({
 			sql: `SELECT * FROM daily_habits INNER JOIN habits ON daily_habits.habit_id = habits.id WHERE daily_habits.date = ?`,
 			args: [formattedDate],
 		});
 
-		if(result.rows.length == 0) {
+		if(resultRow.rows.length == 0) {
 			const habits = await db.execute(`SELECT * FROM habits`);
 			const habitIds = habits.rows.map(row => row.id);
 			await createBatchHabitToday(habitIds, formattedDate);
 
-			result = await db.execute({
+			resultRow = await db.execute({
 				sql: `SELECT * FROM daily_habits INNER JOIN habits ON daily_habits.habit_id = habits.id WHERE daily_habits.date = ?`,
 				args: [formattedDate],
 			});
 		}
 
-		return new Response(JSON.stringify(result.rows), { status: 200 });
+		cache.set(cacheKey, resultRow.rows)
+		return new Response(JSON.stringify(resultRow.rows), { status: 200 });
 	} catch (error) {
 		return new Response(JSON.stringify({ error: (error as Error).message }), { status: 500 });
 	}
@@ -37,6 +51,8 @@ export const POST: APIRoute = async ({ request }) => {
       sql: 'INSERT INTO habits (name, expValue) VALUES (?, ?)',
       args: [data.name, data.expValue],
     })
+		await invalidateHabitsCache()
+
     return new Response(JSON.stringify({ success: true, id: `${result.lastInsertRowid}` }), { status: 201 })
   } catch (error) {
     return new Response(JSON.stringify({ error: (error as Error).message }), { status: 500 })
@@ -54,6 +70,11 @@ export const createBatchHabitToday = async (idRows: Value[], dateString: string)
 			throw new Error((error as Error).message);
 	}
 }
+
+export const invalidateHabitsCache = async () => {
+  cache.clear()
+}
+
 // try {
 //   const body = await request.json();
 //   const { action, data } = body;
